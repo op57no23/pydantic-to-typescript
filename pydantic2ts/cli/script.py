@@ -293,29 +293,7 @@ def _clean_output_file(output_filename: str) -> None:
 def _schema_generation_overrides(
     model: Type[Any],
 ) -> Generator[None, None, None]:
-    """
-    Temporarily override the 'extra' setting for a model,
-    changing it to 'forbid' unless it was EXPLICITLY set to 'allow'.
-    This prevents '[k: string]: any' from automatically being added to every interface.
-    """
-    revert: Dict[str, Any] = {}
-    config = _get_model_config(model)
-    try:
-        if isinstance(config, dict):
-            if config.get("extra") != "allow":
-                revert["extra"] = config.get("extra")
-                config["extra"] = "forbid"
-        else:
-            if config.extra != "allow":
-                revert["extra"] = config.extra
-                config.extra = "forbid"  # type: ignore
-        yield
-    finally:
-        for key, value in revert.items():
-            if isinstance(config, dict):
-                config[key] = value
-            else:
-                setattr(config, key, value)
+    yield
 
 
 def _generate_json_schema(models: List[type]) -> str:
